@@ -68,7 +68,7 @@ all_langs %>%
   ggrepel::geom_text_repel(alpha = 0.9, show.legend = FALSE)+
   scale_y_log10()+
   labs(y = "logarithm number of languages", x = "rank by number of languages")+
-  theme(legend.position = "top")
+  theme(legend.position = "top", legend.title = element_blank())
 
 ggsave(filename = "04_families_by_area.jpeg", 
        width = 200, 
@@ -78,7 +78,7 @@ ggsave(filename = "04_families_by_area.jpeg",
 
 set.seed(42)
 all_langs %>%
-  sample_n(200) %>% 
+  sample_n(200) %>% View()
   select(affiliation) %>% 
   mutate(present = TRUE) %>% 
   count(affiliation, present) %>% 
@@ -105,13 +105,33 @@ all_langs %>%
   ggplot(aes(rank, n, label = affiliation, color = n_for_coloring))+
   geom_point()+
   ggrepel::geom_text_repel(alpha = 0.9, show.legend = FALSE)+
-  annotate("text", y = 600, x = 52, label = annotation, family = "Brill", size = 5)+
   scale_color_gradient(na.value = "red", low = "lightblue", high = "navy", name = "number of languaes in the sample:")+
   scale_y_log10()+
   labs(y = "logarithm number of languages", x = "rank by number of languages")+
   theme(legend.position = "top", legend.title = element_text(size = 12))
 
 ggsave(filename = "09_families_by_sample.jpeg", 
+       width = 200, 
+       height = 150, 
+       units = "mm",
+       device = "jpeg")
+
+all_langs %>% 
+  count(affiliation, area, sort = TRUE) %>% 
+  mutate(rank = 1:n()) %>% 
+  filter(n > 10) %>% 
+  left_join(sampled_langs) %>% 
+  #  mutate(n_for_coloring = ifelse(is.na(present), NA, n)) %>% 
+  ggplot(aes(rank, n, label = affiliation, color = n_for_coloring))+
+  geom_point()+
+  ggrepel::geom_text_repel(alpha = 0.9, show.legend = FALSE)+
+  annotate("text", y = 600, x = 52, label = annotation, family = "Brill", size = 5)+
+  scale_color_gradient(na.value = "red", low = "lightblue", high = "navy", name = "number of languaes in the sample:")+
+  scale_y_log10()+
+  labs(y = "logarithm number of languages", x = "rank by number of languages")+
+  theme(legend.position = "top", legend.title = element_text(size = 12))
+
+ggsave(filename = "10_families_by_sample.jpeg", 
        width = 200, 
        height = 150, 
        units = "mm",
